@@ -15,14 +15,14 @@ import os
 st.set_page_config(page_title="Route Analytics Pro", layout="wide")
 st.markdown("<style>[data-testid='stSidebar'] {display: none;}</style>", unsafe_allow_html=True)
 
-# FIXED: Initialize session state at the very top to prevent AttributeError
+# Initialize session state to prevent startup errors
 if 'journey_data' not in st.session_state:
     st.session_state.journey_data = None
 
 # --- 2. CSS STYLING ---
 st.markdown("""
 <style>
-    /* Main Result Card */
+    /* Card & Map Styling */
     .react-card {
         background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
         border-radius: 1rem; padding: 1.5rem; color: white; margin-bottom: 2rem;
@@ -35,21 +35,13 @@ st.markdown("""
     /* Route Breakdown Timeline */
     .route-container { background-color: #f8fafc; padding: 1rem; border-radius: 1rem; }
     .leg-card { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem; border-radius: 1rem; border: 1px solid; margin-bottom: 5px; position: relative; z-index: 2; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    
-    /* Themes */
     .leg-land { background-color: #ecfdf5; border-color: #6ee7b7; color: #065f46; }
     .leg-sea { background-color: #eff6ff; border-color: #93c5fd; color: #1e40af; }
-    
-    /* Icons */
     .icon-box { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-right: 1rem; flex-shrink: 0; }
     .icon-land { background-color: #10b981; color: white; }
     .icon-sea { background-color: #6366f1; color: white; }
-    
-    /* Stats */
     .stat-km { font-size: 1.25rem; font-weight: 800; color: #111827; }
     .stat-sub { font-size: 0.85rem; color: #6b7280; }
-    
-    /* Connector */
     .connector { display: flex; justify-content: center; align-items: center; height: 24px; position: relative; margin: -2px 0; }
     .conn-line { position: absolute; width: 3px; height: 100%; background: #e5e7eb; left: calc(50% - 1.5px); z-index: 0; }
     .conn-arrow { z-index: 1; background: #f8fafc; color: #9ca3af; padding: 0 4px; font-size: 1rem; }
@@ -58,23 +50,55 @@ st.markdown("""
 
 # --- 3. LOGIC ENGINES ---
 def clean_location(raw):
-    geolocator = Nominatim(user_agent="route_pro_v6_final")
+    """
+    Robust location cleaning that handles abbreviations (UK -> United Kingdom)
+    and strips unnecessary address details.
+    """
+    geolocator = Nominatim(user_agent="route_pro_v7_robust")
+    
+    # 1. Expand common abbreviations
+    corrections = {
+        "UK": "United Kingdom",
+        "USA": "United States",
+        "UAE": "United Arab Emirates",
+        "HK": "Hong Kong",
+        "NZ": "New Zealand"
+    }
+    
+    search_query = raw
+    for abbr, full in corrections.items():
+        # Replace whole word abbreviations (e.g., "Beverley, UK" -> "Beverley, United Kingdom")
+        if f" {abbr}" in search_query or search_query.endswith(abbr) or search_query == abbr:
+            search_query = search_query.replace(abbr, full)
+
     try:
-        time.sleep(1.1)
-        loc = geolocator.geocode(raw, addressdetails=True)
+        time.sleep(1.1) # Respect API limits
+        # Try full clean query
+        loc = geolocator.geocode(search_query, addressdetails=True, timeout=10)
+        
+        # Fallback: If not found, split by comma and try just the first part (City) + Last part (Country)
+        if not loc and "," in search_query:
+            parts = search_query.split(",")
+            fallback_query = f"{parts[0]}, {parts[-1]}"
+            loc = geolocator.geocode(fallback_query, addressdetails=True, timeout=10)
+
         if loc:
             d = loc.raw['address']
-            # Prioritize City/Town, then Country
-            clean = f"{d.get('city') or d.get('town') or d.get('suburb') or ''}, {d.get('country') or ''}".strip(", ")
+            # Prioritize distinct location names
+            clean = f"{d.get('city') or d.get('town') or d.get('village') or d.get('suburb') or ''}, {d.get('country') or ''}".strip(", ")
+            # If still empty (e.g. searching just a country), use the display name
+            if len(clean) < 3: 
+                clean = d.get('country') or search_query
             return loc.latitude, loc.longitude, clean
     except: pass
+    
     return None, None, None
 
 @st.cache_data
 def load_hubs():
     p, a = pd.DataFrame(), pd.DataFrame()
     try:
-        # Check current dir and subfolder to be safe
+        # Check current dir and subfolder
         p_air = 'AirportLists.csv' if os.path.exists('AirportLists.csv') else 'PortDistanceApp/AirportLists.csv'
         p_sea = 'SeaportList.csv' if os.path.exists('SeaportList.csv') else 'PortDistanceApp/SeaportList.csv'
         
@@ -88,13 +112,13 @@ def calculate(o, d, m):
     db_p, db_a = load_hubs()
     l_o, n_o, c_o = clean_location(o)
     l_d, n_d, c_d = clean_location(d)
+    
     if l_o is None or l_d is None: return None
 
     legs = []
     breakdown = {"land": 0, "air": 0, "sea": 0}
     
     if m.lower() == 'land':
-        # Try OSRM for road geometry
         try:
             url = f"http://router.project-osrm.org/route/v1/driving/{n_o},{l_o};{n_d},{l_d}?overview=full"
             r = requests.get(url, timeout=5).json()
@@ -148,14 +172,14 @@ with t1:
                 with st.spinner("Calculating..."):
                     st.session_state.journey_data = calculate(orig, dest, mode)
                 if not st.session_state.journey_data:
-                    st.error("Could not find location. Please verify spelling.")
+                    st.error(f"Could not find locations. Try expanding abbreviations (e.g. 'United Kingdom' instead of 'UK') or simplifying address.")
 
     with col_b:
         if st.session_state.journey_data:
             data = st.session_state.journey_data
             bk = data['breakdown']
 
-            # 1. SUMMARY CARD with BREAKDOWN GRID
+            # SUMMARY CARD
             l_h = f"<div class='breakdown-box'><div style='color:#34d399'>🚗</div><div>{int(bk['land']):,} km</div><div style='font-size:10px; color:#cbd5e1'>Land</div></div>" if bk['land']>0 else ""
             a_h = f"<div class='breakdown-box'><div style='color:#38bdf8'>✈️</div><div>{int(bk['air']):,} km</div><div style='font-size:10px; color:#cbd5e1'>Air</div></div>" if bk['air']>0 else ""
             s_h = f"<div class='breakdown-box'><div style='color:#818cf8'>🚢</div><div>{int(bk['sea']):,} km</div><div style='font-size:10px; color:#cbd5e1'>Sea</div></div>" if bk['sea']>0 else ""
@@ -174,13 +198,13 @@ with t1:
                 </div>
             """), unsafe_allow_html=True)
             
-            # 2. MAP
+            # MAP
             m_obj = folium.Map(location=data['start'], zoom_start=4)
             for leg in data['legs']:
                 folium.PolyLine(leg['coords'], color="#3b82f6", weight=4).add_to(m_obj)
             st_folium(m_obj, height=300, use_container_width=True)
 
-            # 3. ROUTE DETAILS
+            # ROUTE DETAILS
             st.markdown("### Route Details")
             st.markdown('<div class="route-container">', unsafe_allow_html=True)
             for i, leg in enumerate(data['legs']):
