@@ -1,0 +1,336 @@
+port_name,country,latitude,longitude,port_type
+Port of Los Angeles,USA,33.7542,-118.2163,Commercial
+Port of New York,USA,40.6981,-74.0254,Commercial
+Port of Long Beach,USA,33.7638,-118.1937,Commercial
+Port of Savannah,USA,32.0809,-81.0912,Commercial
+Port of Seattle,USA,47.6062,-122.3321,Commercial
+Port of Houston,USA,29.7604,-95.3698,Commercial
+Port of Miami,USA,25.7617,-80.1918,Commercial
+Port of Norfolk,USA,36.8508,-76.2859,Commercial
+Port of Oakland,USA,37.8044,-122.2711,Commercial
+Port of Charleston,USA,32.7765,-79.9311,Commercial
+Port of Baltimore,USA,39.2904,-76.6122,Commercial
+Port of Tacoma,USA,47.2529,-122.4443,Commercial
+Port of Jacksonville,USA,30.3322,-81.6557,Commercial
+Port of Philadelphia,USA,39.9526,-75.1652,Commercial
+Port of San Diego,USA,32.7157,-117.1611,Commercial
+Port of Boston,USA,42.3601,-71.0589,Commercial
+Port of New Orleans,USA,29.9511,-90.0715,Commercial
+Port of Tampa,USA,27.9506,-82.4572,Commercial
+Port of San Juan,Puerto Rico,18.4655,-66.1057,Commercial
+Port of Anchorage,USA,61.2181,-149.9003,Commercial
+Port of Copenhagen,Denmark,55.6761,12.5683,Commercial
+Port of Aarhus,Denmark,56.1629,10.2039,Commercial
+Port of Esbjerg,Denmark,55.4709,8.4529,Commercial
+Port of Hirtshals,Denmark,57.5887,9.9584,Ferry
+Port of Frederikshavn,Denmark,57.4395,10.5365,Ferry
+Port of Aalborg,Denmark,57.0488,9.9217,Commercial
+Port of Odense,Denmark,55.3959,10.3883,Commercial
+Port of Kolding,Denmark,55.4904,9.4722,Commercial
+Port of Grenaa,Denmark,56.414,10.878,Ferry
+Port of Ronne,Denmark,55.1,14.7,Ferry
+Port of Helsingør,Denmark,56.0333,12.6167,Ferry
+Port of Kalundborg,Denmark,55.6795,11.1007,Commercial
+Port of Fredericia,Denmark,55.5657,9.7556,Commercial
+Port of Nyborg,Denmark,55.3125,10.7894,Ferry
+Port of Gdańsk,Poland,54.352,18.6466,Commercial
+Port of Gdynia,Poland,54.5189,18.5305,Commercial
+Port of Szczecin,Poland,53.4289,14.553,Commercial
+Port of Świnoujście,Poland,53.9105,14.2471,Ferry
+Port of Police,Poland,53.5521,14.5718,Commercial
+Port of Kołobrzeg,Poland,54.1759,15.5764,Ferry
+Port of Ustka,Poland,54.58,16.8619,Ferry
+Port of Darłowo,Poland,54.42,16.41,Ferry
+Port of Elbląg,Poland,54.1561,19.4045,Commercial
+Port of Wrocław,Poland,51.1079,17.0385,River
+Port of Felixstowe,United Kingdom,51.9617,1.3514,Commercial
+Port of Southampton,United Kingdom,50.9097,-1.4044,Commercial
+Port of Dover,United Kingdom,51.1279,1.3134,Ferry
+Port of Holyhead,United Kingdom,53.3091,-4.6301,Ferry
+Port of London,United Kingdom,51.5074,-0.1278,Commercial
+Port of Liverpool,United Kingdom,53.4084,-2.9916,Commercial
+Port of Bristol,United Kingdom,51.4545,-2.5879,Commercial
+Port of Hull,United Kingdom,53.744,-0.3325,Commercial
+Port of Glasgow,United Kingdom,55.8642,-4.2518,Commercial
+Port of Aberdeen,United Kingdom,57.1497,-2.0943,Commercial
+Port of Belfast,United Kingdom,54.5973,-5.9301,Commercial
+Port of Portsmouth,United Kingdom,50.8198,-1.088,Ferry
+Port of Plymouth,United Kingdom,50.3755,-4.1427,Commercial
+Port of Newcastle,United Kingdom,54.9783,-1.6178,Commercial
+Port of Immingham,United Kingdom,53.6316,-0.2225,Commercial
+Port of Harwich,United Kingdom,51.942,1.269,Ferry
+Port of Folkestone,United Kingdom,51.081,1.156,Ferry
+Port of Hamburg,Germany,53.5394,9.9772,Commercial
+Port of Bremerhaven,Germany,53.5414,8.5781,Commercial
+Port of Rostock,Germany,54.0924,12.0991,Ferry
+Port of Kiel,Germany,54.3233,10.1394,Commercial
+Port of Lübeck,Germany,53.8659,10.6866,Commercial
+Port of Wilhelmshaven,Germany,53.5228,8.1042,Commercial
+Port of Bremen,Germany,53.0793,8.8017,Commercial
+Port of Duisburg,Germany,51.4344,6.7623,River
+Port of Cologne,Germany,50.9375,6.9603,River
+Port of Frankfurt,Germany,50.1109,8.6821,River
+Port of Mannheim,Germany,49.4875,8.466,River
+Port of Puttgarden,Germany,54.5,11.2167,Ferry
+Port of Sassnitz,Germany,54.5153,13.6419,Ferry
+Port of Warnemünde,Germany,54.1767,12.0842,Ferry
+Port of Vancouver,Canada,49.2827,-123.1207,Commercial
+Port of Montreal,Canada,45.5017,-73.5673,Commercial
+Port of Halifax,Canada,44.6488,-63.5752,Commercial
+Port of Toronto,Canada,43.6532,-79.3832,Commercial
+Port of Prince Rupert,Canada,54.3151,-130.321,Commercial
+Port of Quebec,Canada,46.8139,-71.208,Commercial
+Port of Saint John,Canada,45.2733,-66.0636,Commercial
+Port of Hamilton,Canada,43.2557,-79.8711,Commercial
+Port of Windsor,Canada,42.3149,-83.0364,Commercial
+Port of Victoria,Canada,48.4284,-123.3656,Commercial
+Port of Churchill,Canada,58.7697,-94.169,Commercial
+Port of Thunder Bay,Canada,48.3809,-89.2477,Commercial
+Port of Klaipėda,Lithuania,55.7033,21.1443,Commercial
+Port of Šventoji,Lithuania,56.0267,21.0717,Ferry
+Port of Vilnius,Lithuania,54.6872,25.2797,River
+Port of Auckland,New Zealand,-36.8485,174.7633,Commercial
+Port of Tauranga,New Zealand,-37.6878,176.1651,Commercial
+Port of Wellington,New Zealand,-41.2865,174.7762,Commercial
+Port of Lyttelton,New Zealand,-43.6037,172.719,Commercial
+Port of Napier,New Zealand,-39.4928,176.912,Commercial
+Port of Dunedin,New Zealand,-45.8788,170.5028,Commercial
+Port of Nelson,New Zealand,-41.2706,173.284,Commercial
+Port of New Plymouth,New Zealand,-39.0579,174.0744,Commercial
+Port of Picton,New Zealand,-41.291,174.0081,Ferry
+Port of Algeciras,Spain,36.1275,-5.4539,Commercial
+Port of Valencia,Spain,39.4667,-0.3167,Commercial
+Port of Barcelona,Spain,41.3511,2.175,Commercial
+Port of Bilbao,Spain,43.263,-2.935,Commercial
+Port of Cartagena,Spain,37.6,-0.9819,Commercial
+Port of Las Palmas,Spain,28.1232,-15.4363,Commercial
+Port of Málaga,Spain,36.7194,-4.42,Commercial
+Port of Santander,Spain,43.4623,-3.81,Commercial
+Port of Vigo,Spain,42.2406,-8.7267,Commercial
+Port of Gijón,Spain,43.5453,-5.6619,Commercial
+Port of Tarragona,Spain,41.1189,1.2445,Commercial
+Port of Budapest,Hungary,47.4979,19.0402,River
+Port of Mohács,Hungary,45.993,18.6835,River
+Port of Szeged,Hungary,46.253,20.1485,River
+Port of Baja,Hungary,46.1833,18.9565,River
+Port of Győr,Hungary,47.6875,17.6504,River
+Port of Komárom,Hungary,47.7417,18.1167,River
+Port of Dunakeszi,Hungary,47.6364,19.138,River
+Port Botany,NSW Australia,-33.976,151.191,Commercial
+Port of Melbourne,Victoria Australia,-37.8396,144.9369,Commercial
+Port of Sydney,NSW Australia,-33.8688,151.2093,Commercial
+Port of Brisbane,Queensland Australia,-27.4698,153.0251,Commercial
+Port of Fremantle,WA Australia,-32.0564,115.7438,Commercial
+Port of Adelaide,SA Australia,-34.9285,138.6007,Commercial
+Port of Darwin,NT Australia,-12.4634,130.8456,Commercial
+Port of Hobart,TAS Australia,-42.8821,147.3272,Commercial
+Port of Newcastle,NSW Australia,-32.9283,151.7817,Commercial
+Port of Gladstone,QLD Australia,-23.848,151.256,Commercial
+Port of Townsville,QLD Australia,-19.259,146.8169,Commercial
+Port of Cairns,QLD Australia,-16.9186,145.7781,Commercial
+Port of Geelong,VIC Australia,-38.1499,144.3617,Commercial
+Port of Bunbury,WA Australia,-33.3272,115.6334,Commercial
+Port of Portland,VIC Australia,-38.348,141.6025,Commercial
+Port of Mackay,QLD Australia,-21.1434,149.1867,Commercial
+Port of Gothenburg,Sweden,57.7089,11.9746,Commercial
+Port of Stockholm,Sweden,59.3293,18.0686,Commercial
+Port of Malmö,Sweden,55.605,13.0038,Commercial
+Port of Helsingborg,Sweden,56.05,12.7,Ferry
+Port of Norrköping,Sweden,58.5942,16.1826,Commercial
+Port of Gävle,Sweden,60.6749,17.1413,Commercial
+Port of Luleå,Sweden,65.5848,22.1567,Commercial
+Port of Sundsvall,Sweden,62.3908,17.3069,Commercial
+Port of Uddevalla,Sweden,58.3538,11.9351,Commercial
+Port of Karlstad,Sweden,59.3793,13.5036,River
+Port of Ystad,Sweden,55.4333,13.8167,Ferry
+Port of Trelleborg,Sweden,55.3751,13.1569,Ferry
+Port of Helsinki,Finland,60.1699,24.9384,Commercial
+Port of Turku,Finland,60.4518,22.2666,Ferry
+Port of Kotka,Finland,60.4664,26.9458,Commercial
+Port of Hamina,Finland,60.5695,27.1979,Commercial
+Port of Oulu,Finland,65.0121,25.4651,Commercial
+Port of Rauma,Finland,61.1272,21.5113,Commercial
+Port of Vaasa,Finland,63.096,21.6158,Commercial
+Port of Naantali,Finland,60.4675,22.0264,Ferry
+Port of Hanko,Finland,59.8233,22.9683,Ferry
+Port of Mariehamn,Åland Islands,60.0973,19.9348,Ferry
+Port of Oslo,Norway,59.9139,10.7522,Commercial
+Port of Bergen,Norway,60.3913,5.3221,Commercial
+Port of Stavanger,Norway,58.969,5.7331,Commercial
+Port of Trondheim,Norway,63.4305,10.3951,Commercial
+Port of Kristiansand,Norway,58.1599,8.0182,Commercial
+Port of Tromsø,Norway,69.6496,18.956,Commercial
+Port of Haugesund,Norway,59.4136,5.268,Commercial
+Port of Bodø,Norway,67.2833,14.3833,Commercial
+Port of Ålesund,Norway,62.4722,6.1497,Commercial
+Port of Larvik,Norway,59.0533,10.0356,Ferry
+Port of Riga,Latvia,56.9496,24.1052,Commercial
+Port of Ventspils,Latvia,57.3937,21.5647,Commercial
+Port of Liepāja,Latvia,56.511,21.0135,Commercial
+Port of Santos,Brazil,-23.9416,-46.3187,Commercial
+Port of Rio de Janeiro,Brazil,-22.9068,-43.1729,Commercial
+Port of Paranaguá,Brazil,-25.52,-48.5095,Commercial
+Port of Itajaí,Brazil,-26.9076,-48.6619,Commercial
+Port of Salvador,Brazil,-12.9714,-38.5014,Commercial
+Port of Vitória,Brazil,-20.3155,-40.3128,Commercial
+Port of Recife,Brazil,-8.0476,-34.877,Commercial
+Port of Fortaleza,Brazil,-3.7319,-38.5267,Commercial
+Port of Manaus,Brazil,-3.119,-60.0217,River
+Port of Dublin,Ireland,53.3498,-6.2603,Commercial
+Port of Cork,Ireland,51.8985,-8.4756,Commercial
+Port of Rosslare,Ireland,52.255,-6.3361,Ferry
+Port of Belfast,United Kingdom,54.5973,-5.9301,Commercial
+Port of Waterford,Ireland,52.2593,-7.11,Commercial
+Port of Galway,Ireland,53.2707,-9.0568,Commercial
+Port of Limerick,Ireland,52.6639,-8.6267,Commercial
+Port of Drogheda,Ireland,53.7158,-6.3501,Commercial
+Port of Rotterdam,Netherlands,51.885,4.272,Commercial
+Port of Amsterdam,Netherlands,52.3676,4.9041,Commercial
+Port of Vlissingen,Netherlands,51.4425,3.5736,Commercial
+Port of Groningen,Netherlands,53.2194,6.5665,Commercial
+Port of Maasvlakte,Netherlands,51.9569,4.0336,Commercial
+Port of Den Helder,Netherlands,52.9599,4.7593,Commercial
+Port of IJmuiden,Netherlands,52.46,4.6,Commercial
+Port of Terneuzen,Netherlands,51.335,3.8278,Commercial
+Port of Vienna,Austria,48.2082,16.3738,River
+Port of Linz,Austria,48.3069,14.2858,River
+Port of Krems,Austria,48.4109,15.6145,River
+Port of Enns,Austria,48.2132,14.4761,River
+Port of Constanta,Romania,44.1733,28.6383,Commercial
+Port of Galați,Romania,45.4353,28.038,River
+Port of Brăila,Romania,45.2698,27.9587,River
+Port of Tulcea,Romania,45.171,28.7965,River
+Port of Reykjavik,Iceland,64.1466,-21.9426,Commercial
+Port of Akureyri,Iceland,65.6839,-18.1105,Commercial
+Port of Hafnarfjörður,Iceland,64.0671,-21.9378,Commercial
+Port of Keflavik,Iceland,64.0041,-22.5621,Commercial
+# ESTONIA,Estonia,59.437,24.7536,Ferry
+Port of Tallinn,Estonia,59.3445,24.0533,Commercial
+Port of Paldiski,Estonia,58.3858,24.4967,Commercial
+Port of Pärnu,Estonia,59.3914,27.7747,Commercial
+Port of Sillamäe,Italy,44.4056,8.9463,Commercial
+# ITALY (Expanded),Italy,38.461,-15.9879,Commercial
+Port of Genoa,Italy,40.8518,14.2681,Commercial
+Port of Gioia Tauro,Italy,45.6495,13.7768,Commercial
+Port of Naples,Italy,45.4375,12.3358,Commercial
+Port of Trieste,Italy,43.5514,10.3081,Commercial
+Port of Venice,Italy,44.107,9.8282,Commercial
+Port of Livorno,Italy,39.2152,9.1093,Commercial
+Port of La Spezia,Italy,41.1253,16.8667,Ferry
+Port of Cagliari,Italy,43.6158,13.5189,Ferry
+Port of Bari,Faroe Islands,62.0079,-6.7716,Ferry
+Port of Ancona,Faroe Islands,62.2257,-6.5881,Ferry
+# FAROE ISLANDS,Faroe Islands,61.4769,-6.8111,Ferry
+Port of Tórshavn,Faroe Islands,61.5558,-6.8011,Ferry
+Port of Klaksvík,Faroe Islands,62.1094,-6.7211,Ferry
+Port of Vagur,Nicaragua,12.481,-87.1736,Commercial
+Port of Tvøroyri,Nicaragua,14.0286,-83.3889,Commercial
+Port of Runavík,Nicaragua,11.2528,-85.8708,Ferry
+# NICARAGUA,Nicaragua,12.0136,-83.7635,Commercial
+Port of Corinto,Portugal,41.1829,-8.7012,Commercial
+Port of Puerto Cabezas,Portugal,38.7223,-9.1393,Commercial
+Port of San Juan del Sur,Portugal,37.9562,-8.8708,Commercial
+Port of Bluefields,Portugal,38.5243,-8.8946,Commercial
+# PORTUGAL (Expanded),Portugal,37.0194,-7.9322,Commercial
+Port of Leixões,Madeira,32.6519,-16.9095,Commercial
+Port of Lisbon,Azores,37.7412,-25.6686,Commercial
+Port of Sines,Belgium,51.2294,4.4055,Commercial
+Port of Setúbal,Belgium,51.331,3.1818,Ferry
+Port of Faro,Belgium,51.0543,3.7174,Commercial
+Port of Funchal,Belgium,50.8503,4.3517,River
+Port of Ponta Delgada,Belgium,50.6451,5.5734,River
+# BELGIUM (Expanded),Belgium,51.231,2.9189,Ferry
+Port of Antwerp,France,43.2965,5.3698,Commercial
+Port of Zeebrugge,France,49.4944,0.1079,Commercial
+Port of Ghent,France,51.0383,2.3775,Commercial
+Port of Brussels,France,50.9581,1.8514,Ferry
+Port of Liège,France,48.3904,-4.486,Commercial
+Port of Ostend,France,46.1591,-1.152,Commercial
+# FRANCE (Expanded),France,44.8378,-0.5792,Commercial
+Port of Marseille,France,47.2184,-1.5536,Commercial
+Port of Le Havre,France,47.2736,-2.2139,Commercial
+Port of Dunkirk,France,49.1833,-0.35,Ferry
+Port of Calais,Bulgaria,42.5048,27.4626,Commercial
+Port of Brest,Bulgaria,43.2141,27.9147,Commercial
+Port of La Rochelle,Bulgaria,43.8564,25.9708,River
+Port of Bordeaux,Argentina,-34.6037,-58.3816,Commercial
+Port of Nantes,Argentina,-32.9468,-60.6393,River
+Port of Saint-Nazaire,Argentina,-38.7183,-62.2663,Commercial
+Port of Caen,Argentina,-38.5794,-58.6956,Commercial
+# BULGARIA,Argentina,-54.8068,-68.3063,Commercial
+Port of Burgas,Argentina,-45.8641,-67.4823,Commercial
+Port of Varna,Argentina,-38.0023,-57.5575,Commercial
+Port of Rousse,Turkey,41.0082,28.9784,Commercial
+# ARGENTINA (Expanded),Turkey,38.4192,27.1287,Commercial
+Port of Buenos Aires,Turkey,36.7953,34.6179,Commercial
+Port of Rosario,Turkey,36.8969,30.7133,Commercial
+Port of Bahía Blanca,Turkey,36.5878,36.1739,Commercial
+Port of Quequén,Turkey,41.0027,39.7168,Commercial
+Port of Ushuaia,Turkey,41.2928,36.3313,Commercial
+Port of Comodoro Rivadavia,Turkey,40.1553,26.4142,Ferry
+Port of Mar del Plata,Hong Kong,22.3027,114.1772,Commercial
+# TURKEY (Expanded),Hong Kong,22.3525,114.1279,Commercial
+Port of Istanbul,India,18.9398,72.8355,Commercial
+Port of Izmir,India,13.0827,80.2707,Commercial
+Port of Mersin,India,22.5626,88.363,Commercial
+Port of Antalya,India,17.6868,83.2185,Commercial
+Port of İskenderun,India,9.9312,76.2673,Commercial
+Port of Trabzon,India,23.03,70.2197,Commercial
+Port of Samsun,India,18.9496,72.9565,Commercial
+Port of Çanakkale,India,20.316,86.6105,Commercial
+# HONG KONG,Greece,37.942,23.6462,Commercial
+Port of Hong Kong,Greece,40.6401,22.9444,Commercial
+Kwai Chung Container Terminals,Greece,38.2466,21.7346,Ferry
+# INDIA (Expanded),Greece,35.3387,25.1442,Commercial
+Port of Mumbai,Greece,39.362,22.9425,Commercial
+Port of Chennai,Greece,39.5,20.2667,Ferry
+Port of Kolkata,Slovakia,48.1486,17.1077,River
+Port of Visakhapatnam,Slovakia,47.7639,18.1225,River
+Port of Cochin,Honduras,15.5049,-88.0111,Commercial
+Port of Kandla,Honduras,15.7797,-87.4561,Commercial
+Port of Jawaharlal Nehru,Honduras,15.7833,-86.8,Commercial
+Port of Paradip,Honduras,16.0167,-85.9667,Commercial
+# GREECE (Expanded),Uruguay,-34.9011,-56.1645,Commercial
+Port of Piraeus,Uruguay,-33.8833,-58.4167,Commercial
+Port of Thessaloniki,Uruguay,-34.4719,-57.8444,Ferry
+Port of Patras,Uruguay,-32.3214,-58.0756,River
+Port of Heraklion,Russia,59.9343,30.3061,Commercial
+Port of Volos,Russia,44.7235,37.7686,Commercial
+Port of Igoumenitsa,Russia,43.1155,131.8855,Commercial
+# SLOVAKIA,Russia,68.9707,33.075,Commercial
+Port of Bratislava,Russia,54.7104,20.4522,Commercial
+Port of Komárno,Russia,64.5401,40.5433,Commercial
+# HONDURAS,Russia,42.8131,132.873,Commercial
+Port of Cortés,Russia,42.7447,133.0825,Commercial
+Port of Tela,Slovenia,45.5481,13.7302,Commercial
+Port of La Ceiba, AUSTRALIA SPECIFIC,-32.9283,151.7817,Commercial
+Port of Puerto Castilla,NSW Australia,-34.4735,150.9044,Commercial
+# URUGUAY,NSW Australia,-37.0635,149.9107,Commercial
+Port of Montevideo,NSW Australia,-29.4333,153.3594,Commercial
+Port of Manila (South Harbor),Philippines,14.5833,120.9667,Cargo / Container
+Manila International Container Terminal (MICT),Philippines,14.5833,120.9667,Cargo / Container
+Port of Batangas,Philippines,14.5833,120.9667,Cargo / Container
+Port of Subic Bay,Philippines,14.5833,120.9667,Cargo / Container
+Port of Cebu,Philippines,14.5833,120.9667,Cargo / Container
+Port of Cagayan de Oro,Philippines,14.5833,120.9667,Cargo / Container
+Port of Davao (Sasa Wharf),Philippines,14.5833,120.9667,Cargo / Container
+Port of General Santos,Philippines,14.5833,120.9667,Cargo / Container
+Port of Iloilo,Philippines,14.5833,120.9667,Cargo / Container
+Port of Zamboanga,Philippines,14.5833,120.9667,Cargo / Container
+Port of Liman (Manila),Philippines,14.5833,120.9667,Cargo / Container
+Port of Pulupandan,Philippines,14.5833,120.9667,Cargo / Container
+Port of Tabaco,Philippines,14.5833,120.9667,Cargo / Container
+Port of Surigao,Philippines,14.5833,120.9667,Cargo / Container
+Port of Legazpi,Philippines,14.5833,120.9667,Cargo / Container
+Port of Tacloban,Philippines,14.5833,120.9667,Cargo / Container
+Port of Masinloc,Philippines,14.5833,120.9667,Cargo / Container
+Port of Currimao,Philippines,14.5833,120.9667,Cargo / Container
+Port of San Fernando (La Union),Philippines,14.5833,120.9667,Cargo / Container
+Port of Clark Freeport,Philippines,14.5833,120.9667,Cargo / Container
+Port of Iligan,Philippines,14.5833,120.9667,Cargo / Container
+Port of Tagoloan (Mindanao Container Terminal),Philippines,14.5833,120.9667,Cargo / Container
+Port of Hijo (Davao),Philippines,14.5833,120.9667,Cargo / Container
+Port of Maco (Davao),Philippines,14.5833,120.9667,Cargo / Container
+Port of Mati,Philippines,14.5833,120.9667,Cargo / Container
+Port of Ozamiz,Philippines,14.5833,120.9667,Cargo / Container
+Port of Calapan,Philippines,14.5833,120.9667,Cargo / Container
