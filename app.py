@@ -12,7 +12,7 @@ from streamlit_folium import st_folium
 import os
 
 # --- 1. CONFIGURATION & INITIALIZATION ---
-st.set_page_config(page_title="Route Analytics Pro", layout="wide")
+st.set_page_config(page_title="✈️Route Analytics", layout="wide")
 st.markdown("<style>[data-testid='stSidebar'] {display: none;}</style>", unsafe_allow_html=True)
 
 # Initialize session state to prevent startup errors
@@ -258,3 +258,4 @@ with t2:
             st.success("Complete!")
             st.dataframe(res_df)
             st.download_button("Download Results", res_df.to_csv(index=False), "results.csv")
+
