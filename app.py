@@ -156,7 +156,8 @@ def calculate(o, d, m):
     }
 
 # --- 4. UI TABS ---
-t1, t2 = st.tabs(["📍 Single", "📂 Bulk"])
+st.title("🌍 Route Analytics")
+t1, t2 = st.tabs(["📍 Single", "📂 Bulk Calculation"])
 
 with t1:
     col_a, col_b = st.columns([1, 1.5])
@@ -222,7 +223,7 @@ with t2:
         st.dataframe(df.head())
         
         chunk_size = 50
-        if st.button("🚀 Calculate Batch (Chunked)"):
+        if st.button("🚀 Calculate Batch"):
             all_results = []
             progress_bar = st.progress(0)
             status_text = st.empty()
@@ -278,3 +279,4 @@ with t2:
             
             csv = final_df.to_csv(index=False).encode('utf-8')
             st.download_button("💾 Download Results", csv, "bulk_results.csv", "text/csv")
+
