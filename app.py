@@ -25,29 +25,65 @@ if 'bulk_results' not in st.session_state:
 # --- 2. CSS STYLING ---
 st.markdown("""
 <style>
-    /* Card & Map Styling */
-    .react-card {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-        border-radius: 1rem; padding: 1.5rem; color: white; margin-bottom: 2rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    /* Global Background */
+    .stApp {
+        background-color: #0f172a;
+        color: #f8fafc;
     }
-    .text-grad-sky { background: linear-gradient(to right, #38bdf8, #67e8f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem; font-weight: 700; line-height:1; }
-    .text-grad-orange { background: linear-gradient(to right, #fb923c, #fcd34d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem; font-weight: 700; line-height:1; }
-    .breakdown-box { background: rgba(30, 41, 59, 0.5); border-radius: 0.5rem; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.1); text-align: left; }
-    
-    /* Route Breakdown Timeline */
-    .route-container { background-color: #f8fafc; padding: 1rem; border-radius: 1rem; }
-    .leg-card { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem; border-radius: 1rem; border: 1px solid; margin-bottom: 5px; position: relative; z-index: 2; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .leg-land { background-color: #ecfdf5; border-color: #6ee7b7; color: #065f46; }
-    .leg-sea { background-color: #eff6ff; border-color: #93c5fd; color: #1e40af; }
-    .icon-box { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-right: 1rem; flex-shrink: 0; }
-    .icon-land { background-color: #10b981; color: white; }
-    .icon-sea { background-color: #6366f1; color: white; }
-    .stat-km { font-size: 1.25rem; font-weight: 800; color: #111827; }
-    .stat-sub { font-size: 0.85rem; color: #6b7280; }
-    .connector { display: flex; justify-content: center; align-items: center; height: 24px; position: relative; margin: -2px 0; }
-    .conn-line { position: absolute; width: 3px; height: 100%; background: #e5e7eb; left: calc(50% - 1.5px); z-index: 0; }
-    .conn-arrow { z-index: 1; background: #f8fafc; color: #9ca3af; padding: 0 4px; font-size: 1rem; }
+
+    /* Modern Pro Card */
+    .react-card {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1.25rem;
+        padding: 2rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        margin-bottom: 2rem;
+    }
+
+    /* Glow Text for Kilometers */
+    .text-grad-sky {
+        background: linear-gradient(to right, #38bdf8, #818cf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 3rem;
+        font-weight: 800;
+        text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+    }
+
+    /* Tab Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 24px;
+        background-color: transparent;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        white-space: pre-wrap;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 10px 10px 0px 0px;
+        color: #94a3b8;
+        padding: 0 20px;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background-color: rgba(99, 102, 241, 0.2);
+        color: #6366f1 !important;
+        border-bottom: 2px solid #6366f1 !important;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 10px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -279,5 +315,6 @@ with t2:
             
             csv = final_df.to_csv(index=False).encode('utf-8')
             st.download_button("💾 Download Results", csv, "bulk_results.csv", "text/csv")
+
 
 
