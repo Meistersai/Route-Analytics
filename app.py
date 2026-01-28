@@ -5,6 +5,7 @@ import polyline
 import textwrap
 import io
 import time
+import gc  # Garbage Collector for memory management
 from geopy.distance import geodesic
 from geopy.geocoders import Nominatim
 import folium
@@ -12,12 +13,14 @@ from streamlit_folium import st_folium
 import os
 
 # --- 1. CONFIGURATION & INITIALIZATION ---
-st.set_page_config(page_title="✈️Route Analytics", layout="wide")
+st.set_page_config(page_title="Route Analytics Pro", layout="wide")
 st.markdown("<style>[data-testid='stSidebar'] {display: none;}</style>", unsafe_allow_html=True)
 
-# Initialize session state to prevent startup errors
+# Initialize session state variables
 if 'journey_data' not in st.session_state:
     st.session_state.journey_data = None
+if 'bulk_results' not in st.session_state:
+    st.session_state.bulk_results = pd.DataFrame()
 
 # --- 2. CSS STYLING ---
 st.markdown("""
@@ -54,25 +57,24 @@ def clean_location(raw):
     Robust location cleaning that handles abbreviations (UK -> United Kingdom)
     and strips unnecessary address details.
     """
-    geolocator = Nominatim(user_agent="route_pro_v7_robust")
+    geolocator = Nominatim(user_agent="route_pro_v8_chunked")
     
-    # 1. Expand common abbreviations
+    # Expand common abbreviations
     corrections = {
-        "UK": "United Kingdom",
-        "USA": "United States",
-        "UAE": "United Arab Emirates",
-        "HK": "Hong Kong",
-        "NZ": "New Zealand"
+        "UK": "United Kingdom", "USA": "United States", "UAE": "United Arab Emirates",
+        "HK": "Hong Kong", "NZ": "New Zealand", "PH": "Philippines", "SG": "Singapore",
+        "DE": "Germany", "FR": "France", "CN": "China", "JP": "Japan", "KR": "South Korea"
     }
     
-    search_query = raw
+    search_query = str(raw)
     for abbr, full in corrections.items():
-        # Replace whole word abbreviations (e.g., "Beverley, UK" -> "Beverley, United Kingdom")
         if f" {abbr}" in search_query or search_query.endswith(abbr) or search_query == abbr:
             search_query = search_query.replace(abbr, full)
 
     try:
-        time.sleep(1.1) # Respect API limits
+        # Respect API limits with delay
+        time.sleep(1.2) 
+        
         # Try full clean query
         loc = geolocator.geocode(search_query, addressdetails=True, timeout=10)
         
@@ -84,11 +86,8 @@ def clean_location(raw):
 
         if loc:
             d = loc.raw['address']
-            # Prioritize distinct location names
             clean = f"{d.get('city') or d.get('town') or d.get('village') or d.get('suburb') or ''}, {d.get('country') or ''}".strip(", ")
-            # If still empty (e.g. searching just a country), use the display name
-            if len(clean) < 3: 
-                clean = d.get('country') or search_query
+            if len(clean) < 3: clean = d.get('country') or search_query
             return loc.latitude, loc.longitude, clean
     except: pass
     
@@ -98,7 +97,6 @@ def clean_location(raw):
 def load_hubs():
     p, a = pd.DataFrame(), pd.DataFrame()
     try:
-        # Check current dir and subfolder
         p_air = 'AirportLists.csv' if os.path.exists('AirportLists.csv') else 'PortDistanceApp/AirportLists.csv'
         p_sea = 'SeaportList.csv' if os.path.exists('SeaportList.csv') else 'PortDistanceApp/SeaportList.csv'
         
@@ -158,7 +156,6 @@ def calculate(o, d, m):
     }
 
 # --- 4. UI TABS ---
-st.title("🌍 Route Analytics")
 t1, t2 = st.tabs(["📍 Single", "📂 Bulk"])
 
 with t1:
@@ -172,14 +169,12 @@ with t1:
                 with st.spinner("Calculating..."):
                     st.session_state.journey_data = calculate(orig, dest, mode)
                 if not st.session_state.journey_data:
-                    st.error(f"Could not find locations. Try expanding abbreviations (e.g. 'United Kingdom' instead of 'UK') or simplifying address.")
+                    st.error("Could not find locations. Try expanding abbreviations.")
 
     with col_b:
         if st.session_state.journey_data:
             data = st.session_state.journey_data
             bk = data['breakdown']
-
-            # SUMMARY CARD
             l_h = f"<div class='breakdown-box'><div style='color:#34d399'>🚗</div><div>{int(bk['land']):,} km</div><div style='font-size:10px; color:#cbd5e1'>Land</div></div>" if bk['land']>0 else ""
             a_h = f"<div class='breakdown-box'><div style='color:#38bdf8'>✈️</div><div>{int(bk['air']):,} km</div><div style='font-size:10px; color:#cbd5e1'>Air</div></div>" if bk['air']>0 else ""
             s_h = f"<div class='breakdown-box'><div style='color:#818cf8'>🚢</div><div>{int(bk['sea']):,} km</div><div style='font-size:10px; color:#cbd5e1'>Sea</div></div>" if bk['sea']>0 else ""
@@ -192,70 +187,94 @@ with t1:
                         <div><div class="text-grad-orange">{int(data['total_mi']):,}</div><div style="color:#94a3b8">mi</div></div>
                     </div>
                     <div style="margin-bottom:15px; color:#cbd5e1">⏱️ Est: <span style="color:white; font-weight:600">{data['time']}</span></div>
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; border-top:1px solid #334155; padding-top:15px">
-                        {l_h}{a_h}{s_h}
-                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; border-top:1px solid #334155; padding-top:15px">{l_h}{a_h}{s_h}</div>
                 </div>
             """), unsafe_allow_html=True)
             
-            # MAP
             m_obj = folium.Map(location=data['start'], zoom_start=4)
-            for leg in data['legs']:
-                folium.PolyLine(leg['coords'], color="#3b82f6", weight=4).add_to(m_obj)
+            for leg in data['legs']: folium.PolyLine(leg['coords'], color="#3b82f6", weight=4).add_to(m_obj)
             st_folium(m_obj, height=300, use_container_width=True)
 
-            # ROUTE DETAILS
             st.markdown("### Route Details")
             st.markdown('<div class="route-container">', unsafe_allow_html=True)
             for i, leg in enumerate(data['legs']):
                 theme = "leg-land" if leg['type'] == "land" else "leg-sea"
                 icon_bg = "icon-land" if leg['type'] == "land" else "icon-sea"
-                
                 st.markdown(textwrap.dedent(f"""
                     <div class="leg-card {theme}">
                         <div style="display:flex; align-items:center;">
                             <div class="icon-box {icon_bg}">{leg['icon']}</div>
-                            <div>
-                                <div style="font-weight:700">Leg {i+1}: {leg['desc']}</div>
-                                <div style="font-size:0.9rem">{leg['from']} → {leg['to']}</div>
-                            </div>
+                            <div><div style="font-weight:700">Leg {i+1}: {leg['desc']}</div><div style="font-size:0.9rem">{leg['from']} → {leg['to']}</div></div>
                         </div>
-                        <div style="text-align:right">
-                            <div class="stat-km">{int(leg['dist'])} km</div>
-                            <div class="stat-sub">{int(leg['dist']*0.62)} mi</div>
-                        </div>
+                        <div style="text-align:right"><div class="stat-km">{int(leg['dist'])} km</div></div>
                     </div>
                 """), unsafe_allow_html=True)
-                
-                if i < len(data['legs']) - 1:
-                    st.markdown('<div class="connector"><div class="conn-line"></div><div class="conn-arrow">↓</div></div>', unsafe_allow_html=True)
+                if i < len(data['legs']) - 1: st.markdown('<div class="connector"><div class="conn-line"></div><div class="conn-arrow">↓</div></div>', unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
 with t2:
-    st.info("Upload CSV to process multiple routes.")
-    up = st.file_uploader("Upload", type="csv")
+    st.info("Large Datasets: Processing happens in chunks of 50 to prevent crashes. Please keep this tab active.")
+    up = st.file_uploader("Upload CSV", type="csv")
+    
     if up:
         df = pd.read_csv(up)
+        st.write(f"📋 **Total Rows:** {len(df)}")
         st.dataframe(df.head())
-        if st.button("Calculate Bulk"):
-            results = []
-            progress = st.progress(0)
-            for i, row in df.iterrows():
-                j = calculate(str(row[0]), str(row[1]), str(row[2]))
-                if j:
-                    results.append({
-                        "Total_KM": round(j['total_km'], 1),
-                        "Land_KM": round(j['breakdown']['land'], 1),
-                        "Air_KM": round(j['breakdown']['air'], 1),
-                        "Sea_KM": round(j['breakdown']['sea'], 1),
-                        "Est_Time": j['time']
-                    })
-                else:
-                    results.append({"Total_KM": "Err", "Land_KM":0, "Air_KM":0, "Sea_KM":0, "Est_Time":"-"})
-                progress.progress((i+1)/len(df))
+        
+        chunk_size = 50
+        if st.button("🚀 Calculate Batch (Chunked)"):
+            all_results = []
+            progress_bar = st.progress(0)
+            status_text = st.empty()
             
-            res_df = pd.concat([df, pd.DataFrame(results)], axis=1)
-            st.success("Complete!")
-            st.dataframe(res_df)
-            st.download_button("Download Results", res_df.to_csv(index=False), "results.csv")
+            # CHUNK PROCESSING LOOP
+            total_rows = len(df)
+            for start_idx in range(0, total_rows, chunk_size):
+                end_idx = min(start_idx + chunk_size, total_rows)
+                chunk = df.iloc[start_idx:end_idx]
+                
+                status_text.text(f"Processing rows {start_idx + 1} to {end_idx}...")
+                
+                chunk_results = []
+                for i, row in chunk.iterrows():
+                    # Calculate single row
+                    j = calculate(str(row[0]), str(row[1]), str(row[2]))
+                    
+                    # Store Result
+                    if j:
+                        chunk_results.append({
+                            "Origin_Input": row[0], "Dest_Input": row[1],
+                            "Resolved_Origin": j['clean_o'], "Resolved_Dest": j['clean_d'],
+                            "Total_KM": round(j['total_km'], 1),
+                            "Land_KM": round(j['breakdown']['land'], 1),
+                            "Air_KM": round(j['breakdown']['air'], 1),
+                            "Sea_KM": round(j['breakdown']['sea'], 1),
+                            "Est_Time": j['time']
+                        })
+                    else:
+                        chunk_results.append({
+                            "Origin_Input": row[0], "Dest_Input": row[1],
+                            "Resolved_Origin": "Err", "Resolved_Dest": "Err",
+                            "Total_KM": 0, "Land_KM": 0, "Air_KM": 0, "Sea_KM": 0, "Est_Time": "Err"
+                        })
+                    
+                    # Update Progress
+                    current_progress = (i + 1) / total_rows
+                    progress_bar.progress(current_progress)
 
+                # Append chunk to main results
+                all_results.extend(chunk_results)
+                
+                # MEMORY MANAGEMENT: Clear vars and run garbage collection
+                del chunk
+                del chunk_results
+                gc.collect() 
+            
+            # FINAL OUTPUT
+            final_df = pd.DataFrame(all_results)
+            st.session_state.bulk_results = final_df # Save to state
+            st.success("✅ Processing Complete!")
+            st.dataframe(final_df)
+            
+            csv = final_df.to_csv(index=False).encode('utf-8')
+            st.download_button("💾 Download Results", csv, "bulk_results.csv", "text/csv")
