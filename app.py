@@ -15,54 +15,91 @@ import os
 # --- 1. CONFIGURATION & INITIALIZATION ---
 st.set_page_config(page_title="Route Analytics Pro", layout="wide")
 
-# Custom CSS for Premium Dashboard Look
+# Custom CSS for Professional Light Mode Look
 st.markdown("""
 <style>
-    .stApp { background-color: #0f172a; color: #f8fafc; }
-    .react-card {
-        background: rgba(30, 41, 59, 0.7);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 1.25rem;
-        padding: 1.5rem;
-        color: white;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    /* Global Background - Clean Light Gray */
+    .stApp { 
+        background-color: #f8fafc; 
+        color: #1e293b; 
     }
+    
+    /* Premium White Card with Soft Shadow */
+    .react-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        color: #1e293b;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+    
+    /* Vibrant Gradients for Metrics */
     .text-grad-sky { 
-        background: linear-gradient(to right, #38bdf8, #67e8f9); 
+        background: linear-gradient(to right, #2563eb, #3b82f6); 
         -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
         font-size: 2.5rem; font-weight: 800; line-height: 1; 
     }
     .text-grad-orange { 
-        background: linear-gradient(to right, #fb923c, #fcd34d); 
+        background: linear-gradient(to right, #ea580c, #f59e0b); 
         -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
         font-size: 2.5rem; font-weight: 800; line-height: 1; 
     }
-    .breakdown-box { background: rgba(15, 23, 42, 0.5); border-radius: 0.5rem; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.05); }
-    .route-container { background-color: #f1f5f9; padding: 1.25rem; border-radius: 1rem; color: #1e293b; }
-    .leg-card { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-radius: 0.75rem; border: 1px solid; margin-bottom: 8px; background: white; }
-    .leg-land { border-color: #6ee7b7; border-left: 5px solid #10b981; }
-    .leg-sea { border-color: #93c5fd; border-left: 5px solid #3b82f6; }
-    .icon-box { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-right: 12px; }
-    .icon-land { background: #ecfdf5; color: #10b981; }
-    .icon-sea { background: #eff6ff; color: #3b82f6; }
+    
+    /* Breakdown Boxes for Light Mode */
+    .breakdown-box { 
+        background: #f1f5f9; 
+        border-radius: 0.5rem; 
+        padding: 0.75rem; 
+        border: 1px solid #e2e8f0; 
+        color: #475569;
+        font-weight: 600;
+    }
+    
+    /* Timeline Container */
+    .route-container { 
+        background-color: #ffffff; 
+        padding: 1.25rem; 
+        border-radius: 1rem; 
+        color: #1e293b; 
+        border: 1px solid #e2e8f0;
+    }
+    
+    .leg-card { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 1rem; 
+        border-radius: 0.75rem; 
+        border: 1px solid #e2e8f0; 
+        margin-bottom: 8px; 
+        background: white; 
+    }
+    
+    /* Mode Indicators */
+    .leg-land { border-left: 5px solid #10b981; }
+    .leg-sea { border-left: 5px solid #3b82f6; }
+    
+    /* Form Inputs Overrides */
+    div[data-baseweb="input"] { background-color: white !important; }
+    .stRadio div[role="radiogroup"] { gap: 20px; }
 </style>
 """, unsafe_allow_html=True)
 
 if 'journey_data' not in st.session_state:
     st.session_state.journey_data = None
 
-# --- 2. LOGIC ENGINES ---
+# --- 2. LOGIC ENGINES (Unchanged for reliability) ---
 def clean_location(raw):
-    geolocator = Nominatim(user_agent="route_pro_production_v9")
+    geolocator = Nominatim(user_agent="route_pro_light_v10")
     corrections = {"UK": "United Kingdom", "USA": "United States", "UAE": "United Arab Emirates", "PH": "Philippines"}
     search_query = str(raw)
     for abbr, full in corrections.items():
         if search_query.endswith(abbr) or f" {abbr}" in search_query:
             search_query = search_query.replace(abbr, full)
     try:
-        time.sleep(1.2) # Essential delay for free tier
+        time.sleep(1.2)
         loc = geolocator.geocode(search_query, addressdetails=True, timeout=10)
         if loc:
             d = loc.raw['address']
@@ -118,12 +155,13 @@ t1, t2 = st.tabs(["📍 Single Journey", "📂 Bulk Processing"])
 with t1:
     cola, colb = st.columns([1, 1.5])
     with cola:
+        st.subheader("Route Configuration")
         with st.form("single_form"):
-            o_in = st.text_input("Origin", "Beverley, UK")
-            d_in = st.text_input("Destination", "Sweden")
-            m_in = st.radio("Mode", ["Air", "Sea", "Land"], horizontal=True)
-            if st.form_submit_button("Calculate"):
-                with st.spinner("Analyzing route..."):
+            o_in = st.text_input("Origin Address", "Beverley, UK")
+            d_in = st.text_input("Destination Address", "Sweden")
+            m_in = st.radio("Transport Mode", ["Air", "Sea", "Land"], horizontal=True)
+            if st.form_submit_button("Calculate Distance"):
+                with st.spinner("Analyzing geodata..."):
                     st.session_state.journey_data = calculate(o_in, d_in, m_in)
 
     with colb:
@@ -132,11 +170,12 @@ with t1:
             bk = data['breakdown']
             st.markdown(textwrap.dedent(f"""
                 <div class="react-card">
+                    <div style="color: #64748b; font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;">TOTAL DISTANCE</div>
                     <div style="display:flex; gap:40px; margin-bottom:15px">
-                        <div><div class="text-grad-sky">{int(data['total_km']):,}</div><div style="color:#94a3b8; font-size:12px">KM</div></div>
-                        <div><div class="text-grad-orange">{int(data['total_mi']):,}</div><div style="color:#94a3b8; font-size:12px">MILES</div></div>
+                        <div><div class="text-grad-sky">{int(data['total_km']):,}</div><div style="color:#64748b; font-size:12px; font-weight:500">KILOMETERS</div></div>
+                        <div><div class="text-grad-orange">{int(data['total_mi']):,}</div><div style="color:#64748b; font-size:12px; font-weight:500">MILES</div></div>
                     </div>
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px">
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; border-top:1px solid #e2e8f0; padding-top:15px">
                         <div class="breakdown-box">🚗 {int(bk['land']):,} km</div>
                         <div class="breakdown-box">✈️ {int(bk['air']):,} km</div>
                         <div class="breakdown-box">🚢 {int(bk['sea']):,} km</div>
@@ -144,23 +183,22 @@ with t1:
                 </div>
             """), unsafe_allow_html=True)
             m = folium.Map(location=data['start'], zoom_start=4)
-            for leg in data['legs']: folium.PolyLine(leg['coords'], color="#3b82f6", weight=4).add_to(m)
+            for leg in data['legs']: folium.PolyLine(leg['coords'], color="#2563eb", weight=4).add_to(m)
             st_folium(m, height=350, use_container_width=True)
         else:
-            st.markdown("<div style='text-align:center; padding:50px; border:2px dashed #334155; border-radius:1rem;'><h3>🌍 Logistics Intelligence</h3><p>Enter coordinates to begin</p></div>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align:center; padding:50px; border:2px dashed #cbd5e1; border-radius:1rem; background:white;'><h3>🌍 Supply Chain Intelligence</h3><p>Enter an origin and destination to begin analysis.</p></div>", unsafe_allow_html=True)
 
 with t2:
-    st.markdown("### Bulk Processor (Memory Safe)")
-    up = st.file_uploader("Upload CSV", type="csv")
+    st.markdown("### Bulk Operations")
+    up = st.file_uploader("Upload Logistics CSV", type="csv")
     if up:
-        # SMART ENCODING FIX
         try: df = pd.read_csv(up)
         except: 
             up.seek(0)
             df = pd.read_csv(up, encoding='latin1')
         
-        st.write(f"Loaded {len(df)} rows.")
-        if st.button("🚀 Process in Chunks"):
+        st.write(f"📁 Records detected: {len(df)}")
+        if st.button("🚀 Execute Batch Analysis"):
             results, prog, chunk_size = [], st.progress(0), 50
             for start in range(0, len(df), chunk_size):
                 end = min(start + chunk_size, len(df))
@@ -169,8 +207,8 @@ with t2:
                     j = calculate(str(row[0]), str(row[1]), str(row[2]))
                     results.append({"Total_KM": round(j['total_km'],1) if j else "Err", "Time": j['time'] if j else "-"})
                     prog.progress((len(results))/len(df))
-                gc.collect() # CLEAR MEMORY
+                gc.collect() 
             
             final_df = pd.concat([df, pd.DataFrame(results)], axis=1)
-            st.dataframe(final_df)
-            st.download_button("Download Data", final_df.to_csv(index=False), "logistics_results.csv")
+            st.dataframe(final_df, use_container_width=True)
+            st.download_button("📥 Export Results to CSV", final_df.to_csv(index=False), "logistics_analysis.csv")
