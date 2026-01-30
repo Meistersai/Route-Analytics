@@ -14,7 +14,7 @@ import os
 import math
 
 # --- 1. CONFIGURATION & INITIALIZATION ---
-st.set_page_config(page_title="Route Analytics Pro", layout="wide")
+st.set_page_config(page_title="MyCarbon Route Analytics", layout="wide")
 
 # Custom CSS
 st.markdown("""
@@ -57,7 +57,7 @@ st.markdown("""
 # Session States
 if 'journey_data' not in st.session_state: st.session_state.journey_data = None
 if 'multi_legs' not in st.session_state: st.session_state.multi_legs = [{"id": 0, "val": ""}, {"id": 1, "val": ""}]
-if 'multi_res' not in st.session_state: st.session_state.multi_res = None  # NEW: To stop results disappearing
+if 'multi_res' not in st.session_state: st.session_state.multi_res = None 
 
 # --- 2. LOGIC ENGINES ---
 @st.cache_data
@@ -74,14 +74,12 @@ def load_hubs():
 
 def clean_location(raw):
     search_query = str(raw).strip()
-    # Check IATA
     if len(search_query) == 3 and search_query.isalpha():
         _, db_a = load_hubs()
         match = db_a[db_a['iata'] == search_query.upper()]
         if not match.empty:
             return match.iloc[0]['lat'], match.iloc[0]['lon'], f"{match.iloc[0]['name']} ({search_query.upper()})"
-    # Standard Geocode
-    geolocator = Nominatim(user_agent="route_pro_final_v17")
+    geolocator = Nominatim(user_agent="route_pro_final_v18")
     corrections = {"UK": "United Kingdom", "USA": "United States", "PH": "Philippines"}
     for abbr, full in corrections.items():
         if search_query.endswith(abbr) or f" {abbr}" in search_query:
@@ -153,6 +151,7 @@ def calculate(o, d, m):
     return {"total_km": total, "total_mi": total*0.62, "time": f"{int(hours)}h", "legs": legs, "clean_o": c_o, "clean_d": c_d, "start": (l_o, n_o), "breakdown": bk}
 
 # --- 3. UI TABS ---
+st.title("🌍 Route Analytics")
 t1, t2, t3 = st.tabs(["📍 Single Journey", "🔗 Multi-Leg", "📂 Bulk Processing"])
 
 # TAB 1: SINGLE
@@ -205,22 +204,12 @@ with t1:
                 if i < len(data['legs']) - 1: st.markdown('<div class="connector"><div class="conn-line"></div><div class="conn-arrow">↓</div></div>', unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
-# TAB 2: MULTI-LEG (FIXED PERSISTENCE)
+# TAB 2: MULTI-LEG (CLEAN VERSION)
 with t2:
     col_l, col_r = st.columns([1, 1.5])
     with col_l:
         st.subheader("Build Itinerary")
-        st.markdown("**🚀 Quick Parse:** Paste a string like `XRY>MAD>LHR>MAD` below:")
-        quick_str = st.text_input("Route String", placeholder="e.g. XRY-MAD-LHR", label_visibility="collapsed")
-        if st.button("Parse String"):
-            if quick_str:
-                import re
-                parts = re.split(r'[>\-,]', quick_str)
-                st.session_state.multi_legs = [{"id": i, "val": p.strip()} for i, p in enumerate(parts) if p.strip()]
-                st.rerun()
-
-        st.divider()
-        st.write("**Or build manually:**")
+        st.info("Add multiple stops to calculate a complex route.")
 
         with st.form("multi_leg_form"):
             for i, leg in enumerate(st.session_state.multi_legs):
@@ -261,11 +250,9 @@ with t2:
                         else:
                             st.error(f"Could not resolve: {orig} -> {dest}")
                 
-                # SAVE TO SESSION STATE TO PREVENT DISAPPEARING
                 if legs_data:
                     st.session_state.multi_res = {"total": total_km, "legs": legs_data, "center": map_center}
         
-        # DISPLAY RESULTS FROM SESSION STATE
         if st.session_state.multi_res:
             res = st.session_state.multi_res
             st.markdown(textwrap.dedent(f"""
