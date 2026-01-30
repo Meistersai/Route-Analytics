@@ -13,7 +13,7 @@ from streamlit_folium import st_folium
 import os
 
 # --- 1. CONFIGURATION & INITIALIZATION ---
-st.set_page_config(page_title="Route Analytics Pro", layout="wide")
+st.set_page_config(page_title="MyCarbon Distance Analysis Calculator", layout="wide")
 
 # Custom CSS
 st.markdown("""
@@ -242,7 +242,7 @@ with t1:
             st.markdown('</div>', unsafe_allow_html=True)
 
         else:
-            st.markdown("<div style='text-align:center; padding:50px; border:2px dashed #cbd5e1; border-radius:1rem; background:white;'><h3>🌍 Supply Chain Intelligence</h3><p>Enter an origin and destination to begin analysis.</p></div>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align:center; padding:50px; border:2px dashed #cbd5e1; border-radius:1rem; background:white;'><h3>🧮 Distance Calculator</h3><p>Enter an origin and destination to begin analysis.</p></div>", unsafe_allow_html=True)
 
 with t2:
     st.markdown("### Bulk Operations")
@@ -273,4 +273,5 @@ with t2:
             final_df = pd.concat([df, pd.DataFrame(results)], axis=1)
             st.dataframe(final_df, use_container_width=True)
             st.download_button("📥 Export Results to CSV", final_df.to_csv(index=False), "logistics_analysis.csv")
+
 
