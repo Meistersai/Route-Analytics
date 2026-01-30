@@ -18,10 +18,18 @@ st.set_page_config(page_title="Route Analytics Pro", layout="wide")
 # Custom CSS
 st.markdown("""
 <style>
+    /* --- HIDE STREAMLIT BRANDING & HEADER --- */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    [data-testid="stHeader"] {display: none;}
+    [data-testid="stToolbar"] {visibility: hidden;}
+    
     /* Global Background - Clean Light Gray */
     .stApp { 
         background-color: #f8fafc; 
         color: #1e293b; 
+        margin-top: -50px; /* Pull content up since header is gone */
     }
     
     /* RESULT CARD: Original Dark Gradient Background */
@@ -211,56 +219,4 @@ with t1:
             st.markdown('<div class="route-container">', unsafe_allow_html=True)
             for i, leg in enumerate(data['legs']):
                 theme = "leg-land" if leg['type'] == "land" else "leg-sea"
-                icon_bg = "icon-land" if leg['type'] == "land" else "icon-sea"
-                
-                st.markdown(textwrap.dedent(f"""
-                    <div class="leg-card {theme}">
-                        <div style="display:flex; align-items:center;">
-                            <div class="icon-box {icon_bg}">{leg['icon']}</div>
-                            <div>
-                                <div style="font-weight:700">Leg {i+1}: {leg['desc']}</div>
-                                <div style="font-size:0.9rem">{leg['from']} → {leg['to']}</div>
-                            </div>
-                        </div>
-                        <div style="text-align:right">
-                            <div style="font-weight:700">{int(leg['dist'])} km</div>
-                        </div>
-                    </div>
-                """), unsafe_allow_html=True)
-                
-                if i < len(data['legs']) - 1:
-                    st.markdown('<div class="connector"><div class="conn-line"></div><div class="conn-arrow">↓</div></div>', unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-
-        else:
-            st.markdown("<div style='text-align:center; padding:50px; border:2px dashed #cbd5e1; border-radius:1rem; background:white;'><h3>🌍 Supply Chain Intelligence</h3><p>Enter an origin and destination to begin analysis.</p></div>", unsafe_allow_html=True)
-
-with t2:
-    st.markdown("### Bulk Operations")
-    
-    # Download Template Button
-    template = pd.DataFrame({'Origin': ['Minster House, 23 Flemingate, Beverley, UK'], 'Destination': ['26491, Sweden'], 'Mode': ['Air']})
-    st.download_button("📥 Download Template", template.to_csv(index=False), "template.csv", "text/csv")
-    
-    up = st.file_uploader("Upload Logistics CSV", type="csv")
-    if up:
-        try: df = pd.read_csv(up)
-        except: 
-            up.seek(0)
-            df = pd.read_csv(up, encoding='latin1')
-        
-        st.write(f"📁 Records detected: {len(df)}")
-        if st.button("🚀 Execute Batch Analysis"):
-            results, prog, chunk_size = [], st.progress(0), 50
-            for start in range(0, len(df), chunk_size):
-                end = min(start + chunk_size, len(df))
-                chunk = df.iloc[start:end]
-                for i, row in chunk.iterrows():
-                    j = calculate(str(row[0]), str(row[1]), str(row[2]))
-                    results.append({"Total_KM": round(j['total_km'],1) if j else "Err", "Time": j['time'] if j else "-"})
-                    prog.progress((len(results))/len(df))
-                gc.collect() 
-            
-            final_df = pd.concat([df, pd.DataFrame(results)], axis=1)
-            st.dataframe(final_df, use_container_width=True)
-            st.download_button("📥 Export Results to CSV", final_df.to_csv(index=False), "logistics_analysis.csv")
+                icon_bg = "icon-land" if
