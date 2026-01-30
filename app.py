@@ -174,6 +174,7 @@ def calculate(o, d, m):
     return {"total_km": total, "total_mi": total*0.62, "time": f"{int(hours)}h", "legs": legs, "clean_o": c_o, "clean_d": c_d, "start": (l_o, n_o), "breakdown": bk}
 
 # --- 3. UI TABS ---
+st.title("🌍 Route Analytics")
 t1, t2 = st.tabs(["📍 Single Journey", "📂 Bulk Processing"])
 
 with t1:
@@ -272,3 +273,4 @@ with t2:
             final_df = pd.concat([df, pd.DataFrame(results)], axis=1)
             st.dataframe(final_df, use_container_width=True)
             st.download_button("📥 Export Results to CSV", final_df.to_csv(index=False), "logistics_analysis.csv")
+
