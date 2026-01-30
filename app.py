@@ -57,6 +57,7 @@ st.markdown("""
 # Session States
 if 'journey_data' not in st.session_state: st.session_state.journey_data = None
 if 'multi_legs' not in st.session_state: st.session_state.multi_legs = [{"id": 0, "val": ""}, {"id": 1, "val": ""}]
+if 'multi_res' not in st.session_state: st.session_state.multi_res = None  # NEW: To stop results disappearing
 
 # --- 2. LOGIC ENGINES ---
 @st.cache_data
@@ -65,7 +66,6 @@ def load_hubs():
     try:
         p_air = 'AirportLists.csv' if os.path.exists('AirportLists.csv') else 'PortDistanceApp/AirportLists.csv'
         p_sea = 'SeaportList.csv' if os.path.exists('SeaportList.csv') else 'PortDistanceApp/SeaportList.csv'
-        # Read Airports (expecting column 4 to be IATA code or similar if available, but usually relying on Name)
         a = pd.read_csv(p_air, header=None, encoding='latin1').rename(columns={1:'name', 4:'iata', 6:'lat', 7:'lon'})
         p = pd.read_csv(p_sea, encoding='latin1')
         p.rename(columns={'port_name':'name','latitude':'lat','longitude':'lon'}, inplace=True, errors='ignore')
@@ -73,50 +73,35 @@ def load_hubs():
     return p, a
 
 def clean_location(raw):
-    """
-    Robust location cleaner with RETRY LOGIC to prevent API timeouts.
-    """
     search_query = str(raw).strip()
-    
-    # 1. CHECK IATA CODES (e.g., XRY, LHR, MAD)
+    # Check IATA
     if len(search_query) == 3 and search_query.isalpha():
         _, db_a = load_hubs()
         match = db_a[db_a['iata'] == search_query.upper()]
         if not match.empty:
             return match.iloc[0]['lat'], match.iloc[0]['lon'], f"{match.iloc[0]['name']} ({search_query.upper()})"
-
-    # 2. STANDARD GEOCODING WITH RETRY
-    geolocator = Nominatim(user_agent="route_pro_retry_v16")
+    # Standard Geocode
+    geolocator = Nominatim(user_agent="route_pro_final_v17")
     corrections = {"UK": "United Kingdom", "USA": "United States", "PH": "Philippines"}
     for abbr, full in corrections.items():
         if search_query.endswith(abbr) or f" {abbr}" in search_query:
             search_query = search_query.replace(abbr, full)
-            
-    # Retry Loop (3 Attempts)
     for attempt in range(3):
         try:
-            # Increase delay slightly on retries
-            sleep_time = 1.2 + (attempt * 1.0) 
-            time.sleep(sleep_time)
-            
+            time.sleep(1.2 + attempt)
             loc = geolocator.geocode(search_query, addressdetails=True, timeout=10)
             if loc:
                 d = loc.raw['address']
                 clean = f"{d.get('city') or d.get('town') or d.get('state') or ''}, {d.get('country') or ''}".strip(", ")
                 return loc.latitude, loc.longitude, clean or search_query
-        except:
-            continue # Try again if failed
-            
+        except: continue
     return None, None, None
 
 def get_curve_points(start, end):
     lat1, lon1 = math.radians(start[0]), math.radians(start[1])
     lat2, lon2 = math.radians(end[0]), math.radians(end[1])
     d = 2 * math.asin(math.sqrt(math.sin((lat2 - lat1) / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin((lon2 - lon1) / 2) ** 2))
-    
-    # Safe check for same location to avoid ZeroDivisionError
     if d == 0: return [start, end]
-    
     points = []
     for i in range(31):
         f = i / 30
@@ -147,21 +132,15 @@ def calculate(o, d, m):
         legs.append({"from": c_o, "to": c_d, "dist": dist, "icon": "🚗", "type": "land", "desc": "Road Route", "coords": coords})
         bk['land'] = dist
     else:
-        # Find nearest hubs
         hubs = db_p if m.lower() == 'sea' else db_a
         hubs['t1'] = (hubs['lat'] - l_o)**2 + (hubs['lon'] - n_o)**2
         h1 = hubs.loc[hubs['t1'].idxmin()]
         hubs['t2'] = (hubs['lat'] - l_d)**2 + (hubs['lon'] - n_d)**2
         h2 = hubs.loc[hubs['t2'].idxmin()]
-        
-        # Calculate Distances
         d1 = geodesic((l_o, n_o), (h1['lat'], h1['lon'])).kilometers * 1.2
         d2 = geodesic((h1['lat'], h1['lon']), (h2['lat'], h2['lon'])).kilometers
         d3 = geodesic((h2['lat'], h2['lon']), (l_d, n_d)).kilometers * 1.2
-        
-        # Generate Curve
         curve_coords = get_curve_points((h1['lat'], h1['lon']), (h2['lat'], h2['lon']))
-        
         legs = [
             {"from": c_o, "to": h1['name'], "dist": d1, "icon": "🚗", "type": "land", "desc": "To Hub", "coords": [(l_o, n_o), (h1['lat'], h1['lon'])]},
             {"from": h1['name'], "to": h2['name'], "dist": d2, "icon": "🚢" if m.lower()=='sea' else "✈️", "type": "sea", "desc": "Main Transit", "coords": curve_coords},
@@ -176,6 +155,7 @@ def calculate(o, d, m):
 # --- 3. UI TABS ---
 t1, t2, t3 = st.tabs(["📍 Single Journey", "🔗 Multi-Leg", "📂 Bulk Processing"])
 
+# TAB 1: SINGLE
 with t1:
     cola, colb = st.columns([1, 1.5])
     with cola:
@@ -225,12 +205,11 @@ with t1:
                 if i < len(data['legs']) - 1: st.markdown('<div class="connector"><div class="conn-line"></div><div class="conn-arrow">↓</div></div>', unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
+# TAB 2: MULTI-LEG (FIXED PERSISTENCE)
 with t2:
     col_l, col_r = st.columns([1, 1.5])
     with col_l:
         st.subheader("Build Itinerary")
-        
-        # Quick Parse Input
         st.markdown("**🚀 Quick Parse:** Paste a string like `XRY>MAD>LHR>MAD` below:")
         quick_str = st.text_input("Route String", placeholder="e.g. XRY-MAD-LHR", label_visibility="collapsed")
         if st.button("Parse String"):
@@ -246,7 +225,6 @@ with t2:
         with st.form("multi_leg_form"):
             for i, leg in enumerate(st.session_state.multi_legs):
                 leg['val'] = st.text_input(f"Stop {i+1}", value=leg['val'], key=f"leg_{i}")
-            
             c1, c2, c3 = st.columns(3)
             with c1: 
                 if st.form_submit_button("➕ Add Stop"): 
@@ -270,7 +248,6 @@ with t2:
                 map_center = None
                 
                 with st.spinner("Calculating multi-leg itinerary..."):
-                    # Calculate each hop
                     for i in range(len(stops)-1):
                         orig, dest = stops[i], stops[i+1]
                         res = calculate(orig, dest, mode_multi)
@@ -282,42 +259,49 @@ with t2:
                             })
                             if i == 0: map_center = res['start']
                         else:
-                            st.error(f"Could not resolve route: {orig} -> {dest}. Try checking spelling or using Airport Codes (e.g. LHR).")
+                            st.error(f"Could not resolve: {orig} -> {dest}")
                 
+                # SAVE TO SESSION STATE TO PREVENT DISAPPEARING
                 if legs_data:
-                    st.markdown(textwrap.dedent(f"""
-                        <div class="react-card">
-                            <div style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;">ITINERARY TOTAL</div>
-                            <div style="display:flex; gap:40px;">
-                                <div><div class="text-grad-sky">{int(total_km):,}</div><div style="color:#94a3b8; font-size:12px">KILOMETERS</div></div>
-                                <div><div class="text-grad-orange">{int(total_km*0.62):,}</div><div style="color:#94a3b8; font-size:12px">MILES</div></div>
-                            </div>
+                    st.session_state.multi_res = {"total": total_km, "legs": legs_data, "center": map_center}
+        
+        # DISPLAY RESULTS FROM SESSION STATE
+        if st.session_state.multi_res:
+            res = st.session_state.multi_res
+            st.markdown(textwrap.dedent(f"""
+                <div class="react-card">
+                    <div style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;">ITINERARY TOTAL</div>
+                    <div style="display:flex; gap:40px;">
+                        <div><div class="text-grad-sky">{int(res['total']):,}</div><div style="color:#94a3b8; font-size:12px">KILOMETERS</div></div>
+                        <div><div class="text-grad-orange">{int(res['total']*0.62):,}</div><div style="color:#94a3b8; font-size:12px">MILES</div></div>
+                    </div>
+                </div>
+            """), unsafe_allow_html=True)
+            
+            m_multi = folium.Map(location=res['center'], zoom_start=3)
+            for leg in res['legs']:
+                for segment in leg['coords']:
+                    color = "#10b981" if segment['type'] == 'land' else "#3b82f6"
+                    folium.PolyLine(segment['coords'], color=color, weight=3, opacity=0.8).add_to(m_multi)
+                folium.Marker(leg['start'], popup=leg['from'], icon=folium.Icon(color='blue', icon='info-sign')).add_to(m_multi)
+            st_folium(m_multi, height=350, use_container_width=True)
+            
+            st.markdown("### Itinerary Breakdown")
+            st.markdown('<div class="route-container">', unsafe_allow_html=True)
+            for leg in res['legs']:
+                st.markdown(textwrap.dedent(f"""
+                    <div class="leg-card leg-sea">
+                        <div style="display:flex; align-items:center;">
+                            <div class="icon-box icon-sea">{leg['seq']}</div>
+                            <div><div style="font-weight:700">{leg['from']}</div><div style="font-size:0.9rem">to {leg['to']}</div></div>
                         </div>
-                    """), unsafe_allow_html=True)
-                    
-                    m_multi = folium.Map(location=map_center, zoom_start=3)
-                    for leg in legs_data:
-                        for segment in leg['coords']:
-                            color = "#10b981" if segment['type'] == 'land' else "#3b82f6"
-                            folium.PolyLine(segment['coords'], color=color, weight=3, opacity=0.8).add_to(m_multi)
-                        folium.Marker(leg['start'], popup=leg['from'], icon=folium.Icon(color='blue', icon='info-sign')).add_to(m_multi)
-                    st_folium(m_multi, height=350, use_container_width=True)
-                    
-                    st.markdown("### Itinerary Breakdown")
-                    st.markdown('<div class="route-container">', unsafe_allow_html=True)
-                    for leg in legs_data:
-                        st.markdown(textwrap.dedent(f"""
-                            <div class="leg-card leg-sea">
-                                <div style="display:flex; align-items:center;">
-                                    <div class="icon-box icon-sea">{leg['seq']}</div>
-                                    <div><div style="font-weight:700">{leg['from']}</div><div style="font-size:0.9rem">to {leg['to']}</div></div>
-                                </div>
-                                <div style="font-weight:700">{int(leg['dist']):,} km</div>
-                            </div>
-                        """), unsafe_allow_html=True)
-                        if leg['seq'] < len(legs_data): st.markdown('<div class="connector"><div class="conn-line"></div><div class="conn-arrow">↓</div></div>', unsafe_allow_html=True)
-                    st.markdown('</div>', unsafe_allow_html=True)
+                        <div style="font-weight:700">{int(leg['dist']):,} km</div>
+                    </div>
+                """), unsafe_allow_html=True)
+                if leg['seq'] < len(res['legs']): st.markdown('<div class="connector"><div class="conn-line"></div><div class="conn-arrow">↓</div></div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
+# TAB 3: BULK
 with t3:
     st.markdown("### Bulk Operations")
     template = pd.DataFrame({'Origin': ['Minster House, 23 Flemingate, Beverley, UK'], 'Destination': ['26491, Sweden'], 'Mode': ['Air']})
