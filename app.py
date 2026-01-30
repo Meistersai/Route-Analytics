@@ -57,7 +57,7 @@ st.markdown("""
         font-weight: 600;
     }
     
-    /* Timeline Container & Cards (Light Mode) */
+    /* Timeline Container & Cards (Light Mode Style) */
     .route-container { 
         background-color: #ffffff; 
         padding: 1.25rem; 
@@ -75,11 +75,27 @@ st.markdown("""
         border: 1px solid #e2e8f0; 
         margin-bottom: 8px; 
         background: white; 
+        position: relative;
+        z-index: 2;
     }
     
     /* Mode Indicators */
     .leg-land { border-left: 5px solid #10b981; }
     .leg-sea { border-left: 5px solid #3b82f6; }
+    
+    /* Icons */
+    .icon-box { 
+        width: 40px; height: 40px; border-radius: 50%; 
+        display: flex; align-items: center; justify-content: center; 
+        font-size: 1.2rem; margin-right: 12px; 
+    }
+    .icon-land { background: #ecfdf5; color: #10b981; }
+    .icon-sea { background: #eff6ff; color: #3b82f6; }
+
+    /* Connector Line */
+    .connector { display: flex; justify-content: center; align-items: center; height: 24px; position: relative; margin: -2px 0; }
+    .conn-line { position: absolute; width: 2px; height: 100%; background: #e2e8f0; left: calc(50% - 1px); z-index: 0; }
+    .conn-arrow { z-index: 1; background: #ffffff; color: #94a3b8; padding: 0 4px; font-size: 0.8rem; }
     
     /* Form Inputs Overrides */
     div[data-baseweb="input"] { background-color: white !important; }
@@ -92,7 +108,7 @@ if 'journey_data' not in st.session_state:
 
 # --- 2. LOGIC ENGINES ---
 def clean_location(raw):
-    geolocator = Nominatim(user_agent="route_pro_final_v11")
+    geolocator = Nominatim(user_agent="route_pro_final_v12")
     corrections = {"UK": "United Kingdom", "USA": "United States", "UAE": "United Arab Emirates", "PH": "Philippines"}
     search_query = str(raw)
     for abbr, full in corrections.items():
@@ -168,7 +184,8 @@ with t1:
         if st.session_state.journey_data:
             data = st.session_state.journey_data
             bk = data['breakdown']
-            # RESTORED: Dark Gradient Card with Light Text
+            
+            # 1. DARK RESULT CARD
             st.markdown(textwrap.dedent(f"""
                 <div class="react-card">
                     <div style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;">TOTAL DISTANCE</div>
@@ -183,16 +200,45 @@ with t1:
                     </div>
                 </div>
             """), unsafe_allow_html=True)
+            
+            # 2. MAP
             m = folium.Map(location=data['start'], zoom_start=4)
             for leg in data['legs']: folium.PolyLine(leg['coords'], color="#2563eb", weight=4).add_to(m)
             st_folium(m, height=350, use_container_width=True)
+
+            # 3. ROUTE BREAKDOWN (RESTORED)
+            st.markdown("### Route Details")
+            st.markdown('<div class="route-container">', unsafe_allow_html=True)
+            for i, leg in enumerate(data['legs']):
+                theme = "leg-land" if leg['type'] == "land" else "leg-sea"
+                icon_bg = "icon-land" if leg['type'] == "land" else "icon-sea"
+                
+                st.markdown(textwrap.dedent(f"""
+                    <div class="leg-card {theme}">
+                        <div style="display:flex; align-items:center;">
+                            <div class="icon-box {icon_bg}">{leg['icon']}</div>
+                            <div>
+                                <div style="font-weight:700">Leg {i+1}: {leg['desc']}</div>
+                                <div style="font-size:0.9rem">{leg['from']} → {leg['to']}</div>
+                            </div>
+                        </div>
+                        <div style="text-align:right">
+                            <div style="font-weight:700">{int(leg['dist'])} km</div>
+                        </div>
+                    </div>
+                """), unsafe_allow_html=True)
+                
+                if i < len(data['legs']) - 1:
+                    st.markdown('<div class="connector"><div class="conn-line"></div><div class="conn-arrow">↓</div></div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+
         else:
             st.markdown("<div style='text-align:center; padding:50px; border:2px dashed #cbd5e1; border-radius:1rem; background:white;'><h3>🌍 Supply Chain Intelligence</h3><p>Enter an origin and destination to begin analysis.</p></div>", unsafe_allow_html=True)
 
 with t2:
     st.markdown("### Bulk Operations")
     
-    # RESTORED: Download Template Button
+    # Download Template Button
     template = pd.DataFrame({'Origin': ['Minster House, 23 Flemingate, Beverley, UK'], 'Destination': ['26491, Sweden'], 'Mode': ['Air']})
     st.download_button("📥 Download Template", template.to_csv(index=False), "template.csv", "text/csv")
     
