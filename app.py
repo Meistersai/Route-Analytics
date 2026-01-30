@@ -15,7 +15,7 @@ import os
 # --- 1. CONFIGURATION & INITIALIZATION ---
 st.set_page_config(page_title="Route Analytics Pro", layout="wide")
 
-# Custom CSS for Professional Light Mode Look
+# Custom CSS
 st.markdown("""
 <style>
     /* Global Background - Clean Light Gray */
@@ -24,40 +24,40 @@ st.markdown("""
         color: #1e293b; 
     }
     
-    /* Premium White Card with Soft Shadow */
+    /* RESULT CARD: Original Dark Gradient Background */
     .react-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
         border-radius: 1rem;
         padding: 1.5rem;
-        color: #1e293b;
+        color: white; /* Text must be white on dark bg */
         margin-bottom: 2rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.05);
     }
     
-    /* Vibrant Gradients for Metrics */
+    /* Gradient Text for Metrics (Sky & Orange) */
     .text-grad-sky { 
-        background: linear-gradient(to right, #2563eb, #3b82f6); 
+        background: linear-gradient(to right, #38bdf8, #67e8f9); 
         -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
         font-size: 2.5rem; font-weight: 800; line-height: 1; 
     }
     .text-grad-orange { 
-        background: linear-gradient(to right, #ea580c, #f59e0b); 
+        background: linear-gradient(to right, #fb923c, #fcd34d); 
         -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
         font-size: 2.5rem; font-weight: 800; line-height: 1; 
     }
     
-    /* Breakdown Boxes for Light Mode */
+    /* Breakdown Boxes (Dark Semi-Transparent) */
     .breakdown-box { 
-        background: #f1f5f9; 
+        background: rgba(30, 41, 59, 0.5); 
         border-radius: 0.5rem; 
         padding: 0.75rem; 
-        border: 1px solid #e2e8f0; 
-        color: #475569;
+        border: 1px solid rgba(255,255,255,0.1); 
+        color: #cbd5e1;
         font-weight: 600;
     }
     
-    /* Timeline Container */
+    /* Timeline Container & Cards (Light Mode) */
     .route-container { 
         background-color: #ffffff; 
         padding: 1.25rem; 
@@ -90,9 +90,9 @@ st.markdown("""
 if 'journey_data' not in st.session_state:
     st.session_state.journey_data = None
 
-# --- 2. LOGIC ENGINES (Unchanged for reliability) ---
+# --- 2. LOGIC ENGINES ---
 def clean_location(raw):
-    geolocator = Nominatim(user_agent="route_pro_light_v10")
+    geolocator = Nominatim(user_agent="route_pro_final_v11")
     corrections = {"UK": "United Kingdom", "USA": "United States", "UAE": "United Arab Emirates", "PH": "Philippines"}
     search_query = str(raw)
     for abbr, full in corrections.items():
@@ -168,14 +168,15 @@ with t1:
         if st.session_state.journey_data:
             data = st.session_state.journey_data
             bk = data['breakdown']
+            # RESTORED: Dark Gradient Card with Light Text
             st.markdown(textwrap.dedent(f"""
                 <div class="react-card">
-                    <div style="color: #64748b; font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;">TOTAL DISTANCE</div>
+                    <div style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;">TOTAL DISTANCE</div>
                     <div style="display:flex; gap:40px; margin-bottom:15px">
-                        <div><div class="text-grad-sky">{int(data['total_km']):,}</div><div style="color:#64748b; font-size:12px; font-weight:500">KILOMETERS</div></div>
-                        <div><div class="text-grad-orange">{int(data['total_mi']):,}</div><div style="color:#64748b; font-size:12px; font-weight:500">MILES</div></div>
+                        <div><div class="text-grad-sky">{int(data['total_km']):,}</div><div style="color:#94a3b8; font-size:12px; font-weight:500">KILOMETERS</div></div>
+                        <div><div class="text-grad-orange">{int(data['total_mi']):,}</div><div style="color:#94a3b8; font-size:12px; font-weight:500">MILES</div></div>
                     </div>
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; border-top:1px solid #e2e8f0; padding-top:15px">
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px">
                         <div class="breakdown-box">🚗 {int(bk['land']):,} km</div>
                         <div class="breakdown-box">✈️ {int(bk['air']):,} km</div>
                         <div class="breakdown-box">🚢 {int(bk['sea']):,} km</div>
@@ -190,6 +191,11 @@ with t1:
 
 with t2:
     st.markdown("### Bulk Operations")
+    
+    # RESTORED: Download Template Button
+    template = pd.DataFrame({'Origin': ['Minster House, 23 Flemingate, Beverley, UK'], 'Destination': ['26491, Sweden'], 'Mode': ['Air']})
+    st.download_button("📥 Download Template", template.to_csv(index=False), "template.csv", "text/csv")
+    
     up = st.file_uploader("Upload Logistics CSV", type="csv")
     if up:
         try: df = pd.read_csv(up)
