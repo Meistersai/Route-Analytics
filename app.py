@@ -295,7 +295,8 @@ with t3:
     st.download_button("📥 Download Template", template.to_csv(index=False), "template.csv", "text/csv")
     up = st.file_uploader("Upload Logistics CSV", type="csv")
     if up:
-        try: df = pd.read_csv(up)
+        try: 
+            df = pd.read_csv(up)
         except: 
             up.seek(0)
             df = pd.read_csv(up, encoding='latin1')
@@ -306,9 +307,25 @@ with t3:
                 end = min(start + chunk_size, len(df))
                 chunk = df.iloc[start:end]
                 for i, row in chunk.iterrows():
-                    j = calculate(str(row[0]), str(row[1]), str(row[2]))
-                    results.append({"Total_KM": round(j['total_km'],1) if j else "Err", "Time": j['time'] if j else "-"})
-                    prog.progress((len(results))/len(df))
+                    # Access by position (0: Origin, 1: Destination, 2: Mode)
+                    origin = str(row.iloc[0])
+                    dest   = str(row.iloc[1])
+                    mode   = str(row.iloc[2])
+                    
+                    j = calculate(origin, dest, mode)
+                    
+                    if j is not None:
+                        results.append({
+                            "Total_KM": round(j['total_km'], 1),
+                            "Time": j['time']
+                        })
+                    else:
+                        results.append({
+                            "Total_KM": "Error",
+                            "Time": "-"
+                        })
+                    
+                    prog.progress(len(results) / len(df))
                 gc.collect() 
             final_df = pd.concat([df, pd.DataFrame(results)], axis=1)
             st.dataframe(final_df, use_container_width=True)
